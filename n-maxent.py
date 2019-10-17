@@ -2,6 +2,7 @@ import nltk
 import csv
 import re
 import math
+import pickle
 
 def features(words):
     return dict([(word, True) for word in words])
@@ -50,23 +51,32 @@ def test(filename,  classifier):
     
     right = 0
     wrong = 0
+    wrong_items = []
     for item in testing_set:
         if classifier.classify(list_to_dict(item[0])) == item[1]:
             right += 1
         else: 
             wrong += 1
+            wrong_items.append([item[0], item[1]])
     print(f'# right {right} # wrong {wrong}')
 
 
 
 if __name__ == "__main__":
-    training_set = load_data('datasets/Eminem.csv')
-    training_set = [(list_to_dict(item[0]), item[1]) for item in training_set]
+    classifier = ""
+    try:
+        with open("maxent.pickle", "rb") as f:
+            classifier = pickle.load(f)
+    except IOError:
+        training_set = load_data('datasets/Eminem.csv')
+        training_set = [(list_to_dict(item[0]), item[1]) for item in training_set]
+        training_set += [(list_to_dict(item[0]), item[1]) for item in load_data('datasets/Shakira.csv')]
 
-
-    iterations = 200
-    algorithm = nltk.classify.MaxentClassifier.ALGORITHMS[0]
-    classifier = nltk.MaxentClassifier.train(training_set, algorithm, max_iter = iterations)
+        iterations = 10
+        classifier = nltk.MaxentClassifier.train(training_set, max_iter = iterations)
+        
+        with open("maxent.pickle", "wb") as f:
+            pickle.dump(classifier, f)
     classifier.show_most_informative_features(10)
 
     test('datasets/KatyPerry.csv', classifier)
