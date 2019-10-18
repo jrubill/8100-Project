@@ -18,6 +18,9 @@ def load_data(filename):
             content = re.sub(r'[^\w\s]', '', row[3]).lower()
 
             content = content.split(" ")
+            for i in range(len(content)):
+                if i in illegalWords:
+                    del content[i]
             training_set.append([content, row[4]])
     return training_set
     
@@ -71,14 +74,18 @@ if __name__ == "__main__":
         training_set = [(list_to_dict(item[0]), item[1]) for item in load_data('datasets/Eminem.csv')]
         training_set += [(list_to_dict(item[0]), item[1]) for item in load_data('datasets/Shakira.csv')]
 
-        iterations = 10
-        classifier = nltk.MaxentClassifier.train(training_set, max_iter = iterations, gaussian_prior_sigma=0.01)
+        iterations = 5
+        classifier = nltk.MaxentClassifier.train(training_set, max_iter = iterations, gaussian_prior_sigma=0.01) # gaussian_prior_sigma=0.1
         
         with open("maxent.pickle", "wb") as f:
             pickle.dump(classifier, f)
+    '''
     classifier.show_most_informative_features(10)
 
     test('datasets/KatyPerry.csv', classifier)
+    '''
+    test('datasets/LMFAO.csv', classifier)
+    #main()
 
 
    
