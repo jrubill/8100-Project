@@ -17,10 +17,16 @@ def load_data(filename):
                 continue
             content = re.sub(r'[^\w\s]', '', row[3]).lower()
 
-            content = content.split(" ")
+            content = set(content.split(" "))
+            for word in illegalWords:
+                if word in content:
+                    content.remove(word)
+            '''
             for i in range(len(content)):
                 if i in illegalWords:
                     del content[i]
+            '''
+            content = list(content)
             training_set.append([content, row[4]])
     return training_set
     
@@ -67,6 +73,12 @@ def test(filename,  classifier):
 
 if __name__ == "__main__":
     classifier = ""
+    training_set = [(list_to_dict(item[0]), item[1]) for item in load_data('Maxent_Data/retrained.csv')]
+    iterations = 5
+    classifier = nltk.MaxentClassifier.train(training_set, max_iter = iterations, gaussian_prior_sigma=0.01) # gaussian_prior_sigma=0.1
+    with open("maxent.pickle", "wb") as f:
+        pickle.dump(classifier, f)
+    '''
     try:
         with open("maxent.pickle", "rb") as f:
             classifier = pickle.load(f)
@@ -79,6 +91,7 @@ if __name__ == "__main__":
         
         with open("maxent.pickle", "wb") as f:
             pickle.dump(classifier, f)
+    '''
     '''
     classifier.show_most_informative_features(10)
 

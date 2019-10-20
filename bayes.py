@@ -4,7 +4,7 @@ import math
 import pickle 
 
 DIR = 'datasets/'
-DATASET = 'Eminem.csv'
+DATASET = 'training.csv'
 
 
 ''' 
@@ -20,7 +20,7 @@ class NaiveClassifier:
         self.total = 0
 
     def load_data(self, filename):
-        illegalWords = set(['katy', 'perry', 'katyperry', 'psy', 'shakira', 'eminem'])
+        illegalWords = set(['katy', 'perry', 'katyperry', 'psy', 'shakira', 'eminem', 'kobyoshi02', '7', '강남스타일'])
         with open(filename, 'r', encoding='utf8') as f:
             reader = csv.reader(f)
             for row in reader:
@@ -30,7 +30,7 @@ class NaiveClassifier:
 
                 content = content.split(" ")
                 for word in content:
-                    if word in illegalWords:
+                    if word in illegalWords or "https" in word:
                         continue
                     if not word in self.wordDict:
                         self.wordDict[word] = Word(word)
@@ -84,9 +84,13 @@ class Word:
     def __str__(self):
         return f'-{self.negative}, +{self.positive}'
 
+    '''
     def __lt__(self, other):
         return (self.negative - self.positive) < (other.negative - other.positive)
+    '''
 
+    def __lt__(self, other):
+        return (self.negative > other.negative)
 
 def test_classifier(classifier, filename):
     wrong, correct = 0, 0
@@ -105,16 +109,44 @@ def test_classifier(classifier, filename):
 
     print(f'prediction accuracy: {correct/(wrong + correct)}')
 
+def input_loop(classifier):
+    val = ""
+    while val != "quit":
+        val = input("Enter your string here:")
+        if val != "quit":
+            print(classifier.predict(val))
+
+
+def retrain(c):
+    c.load_data('Bayes_Data/retrained.csv')
+    
 
 if __name__ == "__main__":
     c = NaiveClassifier()
-    c.load_data(DIR+DATASET)
-    c.load_data(DIR+"Shakira.csv")
-    c.load_data(DIR+'LMFAO.csv')
-    c.load_data(DIR+"Psy.csv")
-
+    #c.load_data(DIR+DATASET)
+    #c.load_data(DIR+'retrained.csv')
+    #c.load_data(DIR+"Shakira.csv")
+    #c.load_data(DIR+'LMFAO.csv')
+    #c.load_data(DIR+"Psy.csv")
+    retrain(c)
     test_classifier(c, DIR + 'KatyPerry.csv')
+    
     with open("bayes.pickle", "wb") as f:
         pickle.dump(c, f)
-    #for k in sorted(c.wordDict, key=c.wordDict.get, reverse=True):
-    #    print('"' + str(k) + '": ' + str(c.wordDict[k]))
+
+    '''
+    with open("unique.txt", "w") as f:
+        for word in c.wordDict:
+            f.write("{}\n".format(word))
+    '''
+
+    '''
+    i = 0    
+    for k in sorted(c.wordDict, key=c.wordDict.get):
+        print('"' + str(k) + '": ' + str(c.wordDict[k]))
+        i += 1
+        if i == 50: 
+            break
+    '''
+    #input_loop(c)
+    
