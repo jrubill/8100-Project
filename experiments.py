@@ -224,6 +224,8 @@ def run_first_n_words(classifier):
     for i in range(length):
         n_words.add(" ".join(first_n_words(spamlist[i], legitlist[i], classifier, wordlist)))
     
+    for item in n_words:
+        print(item)
     return list(n_words)
 
 
@@ -265,7 +267,8 @@ def first_n_attack(classifier):
 
     avg = 0
     flag = False
-    import random 
+    import random
+    itrs = 0
     for comment in spam:
         for i in range(WORD_LIMIT):
             comment += " {}".format(random.choice(goodWords))
@@ -291,6 +294,7 @@ def best_n_attack(classifier):
     avg = 0
     flag = False
     import random 
+
     for comment in spam:
         for i in range(WORD_LIMIT):
             comment += " {}".format(random.choice(goodWords))
@@ -317,9 +321,8 @@ def main():
     first_n_attack(maxent)
 
     # maxent.explain(list_to_dict(get_word_list()))
-    # run_best_n_words(maxent)
-    #best_n_attack(maxent)
-    #best_n_attack(bayes)
+    # best_n_attack(maxent)
+    # best_n_attack(bayes)
 
 if __name__ == "__main__":
     main()
