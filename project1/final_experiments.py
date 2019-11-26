@@ -1,6 +1,6 @@
 from experiments import load_bayes, load_maxent, run_first_n_words, load_spam
 from bayes import NaiveClassifier, Word
-from multiple import RFClassifier, SVM
+from multiple import RFClassifier, SVM, Voting
 import nltk
 
 
@@ -12,6 +12,12 @@ def load_SVM():
 
 def load_RF():
     clf = RFClassifier()
+    clf.load_data('datasets/KatyPerry.csv')
+    clf.train()
+    return clf
+
+def load_VCLF():
+    clf = Voting()
     clf.load_data('datasets/KatyPerry.csv')
     clf.train()
     return clf
@@ -75,10 +81,15 @@ if __name__ == "__main__":
     maxent = load_maxent()
     RF = load_RF()
     SVM = load_SVM()
+    vclf = load_VCLF()
+
+    first_n_attack(vclf)
     #first_n_attack(bayes)
     #first_n_attack(maxent)
     #first_n_attack(SVM)
     #first_n_attack(RF)
+    '''
     from multiprocessing import Pool
     with Pool(2) as p:
         p.map(first_n_attack, [RF, SVM])
+    '''
