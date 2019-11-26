@@ -45,7 +45,7 @@ class RFClassifier():
         print('Recall score: {}'.format(recall_score(y_test, predRF)))
         print('F1 score: {}'.format(f1_score(y_test, predRF)))
         '''
-        
+
     def classify(self, text):
         text = self.vect.transform([text])
         return self.classifier.predict(text)
